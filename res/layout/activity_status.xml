@@ -28,7 +28,7 @@
         android:hint="@string/hintText"
         android:id="@+id/editText"
         android:background="#CCFFFFFF"
-        android:textColor="#FFF"
+        android:textColor="#000"
         android:gravity="top|center_horizontal"/>
     
     <Button
