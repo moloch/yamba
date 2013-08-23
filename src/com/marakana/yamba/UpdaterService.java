@@ -1,5 +1,9 @@
 package com.marakana.yamba;
 
+import java.util.List;
+
+import winterwell.jtwitter.Twitter;
+import winterwell.jtwitter.TwitterException;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -11,6 +15,7 @@ public class UpdaterService extends Service {
 	private static final int DELAY = 60000;
 	private boolean runFlag = false;
 	private Updater updater;
+	private YambaApplication yamba;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -20,6 +25,7 @@ public class UpdaterService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		this.yamba = (YambaApplication) getApplication();
 		this.updater = new Updater();
 		Log.d(TAG, "onCreate");
 	}
@@ -29,6 +35,7 @@ public class UpdaterService extends Service {
 		Log.d(TAG, "onStart");
 		this.runFlag = true;
 		this.updater.start();
+		this.yamba.setServiceRunning(true);
 		return START_STICKY;
 	}
 
@@ -38,24 +45,35 @@ public class UpdaterService extends Service {
 		this.runFlag = false;
 		this.updater.interrupt();
 		this.updater = null;
+		this.yamba.setServiceRunning(false);
 		super.onDestroy();
 	}
 
 	private class Updater extends Thread {
 
+		private List<Twitter.Status> timeline;
+
 		public Updater() {
 			super("UpdaterService-Updater");
 		}
-		
+
 		@Override
 		public void run() {
 			UpdaterService updaterService = UpdaterService.this;
-			while(updaterService.runFlag){
+			while (updaterService.runFlag) {
 				Log.d(TAG, "Updater running");
 				try {
-					//TODO: put some code here
+					try {
+						timeline = yamba.getTwitter().getFriendsTimeline();
+					} catch (TwitterException e) {
+						Log.e(TAG, "Failed to connect to twitter service");
+					}
+					for (Twitter.Status status : timeline) {
+						Log.d(TAG, String.format("%s: %s", status.user.name,
+								status.text));
+					}
 					Log.d(TAG, "Updater ran");
-					Thread.sleep(updaterService.DELAY);
+					Thread.sleep(UpdaterService.DELAY);
 				} catch (InterruptedException e) {
 					updaterService.runFlag = false;
 				}
