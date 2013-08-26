@@ -7,6 +7,7 @@ import winterwell.jtwitter.TwitterException;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
 import android.util.Log;
@@ -87,7 +88,11 @@ public class UpdaterService extends Service {
 						values.put(DbHelper.C_SOURCE, status.source);
 						values.put(DbHelper.C_TEXT, status.text);
 						values.put(DbHelper.C_USER, status.user.name);
-						db.insertOrThrow(DbHelper.TABLE, null, values);
+						try{
+							db.insertOrThrow(DbHelper.TABLE, null, values);
+						}catch(SQLException e){
+							//for now we ignore the exception
+						}
 						Log.d(TAG, String.format("%s: %s", status.user.name,
 								status.text));
 					}
