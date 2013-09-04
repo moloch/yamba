@@ -12,5 +12,5 @@
     <string name="titleServiceStop">Stop service</string>
     <string name="titleApiRoot">Api Root</string><string name="titlePassword">Password</string><string name="titleUsername">Username</string>
     <string name="summaryApiRoot">api root URL</string><string name="summaryPassword">password login information</string><string name="summaryUsername">username login information</string>
-
+ 	<string name="titleTimeline">Timeline</string>
 </resources>
