@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class TimelineActivity extends Activity {
@@ -11,16 +12,17 @@ public class TimelineActivity extends Activity {
 	Cursor cursor;
 	ListView listTimeline;
 	YambaApplication yamba;
-	TextView textTimeline;
+	SimpleCursorAdapter adapter;
 	
 	static final String[] FROM = {StatusData.C_CREATED_AT, StatusData.C_USER, StatusData.C_TEXT};
+	static final int[] TO = {R.id.textCreatedAt, R.id.textUser, R.id.textText};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		yamba = (YambaApplication) getApplication();
 		setContentView(R.layout.timeline);
-		textTimeline = (TextView) findViewById(R.id.textTimeline);
+		listTimeline = (ListView) findViewById(R.id.listTimeline);
 	}
 	
 	@Override
@@ -35,14 +37,8 @@ public class TimelineActivity extends Activity {
 		cursor = statusData.getStatusUpdates();
 		startManagingCursor(cursor);
 		
-		String user, text, output;
-		while(cursor.moveToNext()){
-			user = cursor.getString(cursor.getColumnIndex(statusData.C_USER));
-			text = cursor.getString(cursor.getColumnIndex(statusData.C_TEXT));
-			output = String.format("%s: %s\n", user, text);
-			textTimeline.append(output);
-		}
-		
+		adapter = new SimpleCursorAdapter(this, R.layout.row, cursor, FROM, TO);
+		listTimeline.setAdapter(adapter);
 	}
 	
 }
