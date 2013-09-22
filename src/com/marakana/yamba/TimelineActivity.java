@@ -1,5 +1,7 @@
 package com.marakana.yamba;
 
+import com.marakana.yamba.StatusData.DbHelper;
+
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -12,17 +14,16 @@ public class TimelineActivity extends Activity {
 	Cursor cursor;
 	ListView listTimeline;
 	YambaApplication yamba;
-	SimpleCursorAdapter adapter;
-	
-	static final String[] FROM = {StatusData.C_CREATED_AT, StatusData.C_USER, StatusData.C_TEXT};
-	static final int[] TO = {R.id.textCreatedAt, R.id.textUser, R.id.textText};
+	TimelineAdapter adapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		yamba = (YambaApplication) getApplication();
+		yamba = (YambaApplication) this.getApplication();
 		setContentView(R.layout.timeline);
+		// Find your views
 		listTimeline = (ListView) findViewById(R.id.listTimeline);
+		
 	}
 	
 	@Override
@@ -35,9 +36,8 @@ public class TimelineActivity extends Activity {
 		super.onResume();
 		StatusData statusData = yamba.getStatusData();
 		cursor = statusData.getStatusUpdates();
-		startManagingCursor(cursor);
-		
-		adapter = new SimpleCursorAdapter(this, R.layout.row, cursor, FROM, TO);
+		startManagingCursor(cursor);		
+		adapter = new TimelineAdapter(this, cursor);
 		listTimeline.setAdapter(adapter);
 	}
 	
