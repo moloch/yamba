@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -12,7 +13,7 @@ public class StatusData {
 
 	private static final String TAG = StatusData.class.getSimpleName();
 
-	static final int VERSION = 3;
+	static final int VERSION = 5;
 	static final String DATABASE = "timeline.db";
 	static final String TABLE = "timeline";
 
@@ -109,4 +110,9 @@ public class StatusData {
 			db.close();
 		}
 	}
+	
+	public void delete(){
+		
+	}
+
 }

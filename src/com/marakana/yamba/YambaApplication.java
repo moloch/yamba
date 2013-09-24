@@ -87,6 +87,7 @@ public class YambaApplication extends Application implements
 			for (Status status : statusUpdates) {
 				values.put(StatusData.C_ID, status.getId());
 				long createdAt = status.getCreatedAt().getTime();
+				values.put(StatusData.C_CREATED_AT, createdAt);
 				values.put(StatusData.C_TEXT, status.getText());
 				values.put(StatusData.C_USER, status.getUser().getName());
 				Log.d(TAG, "Got update with id " + status.getId() + ". Saving");
@@ -102,6 +103,10 @@ public class YambaApplication extends Application implements
 			Log.e(TAG, "Failed to fetch status updates", e);
 			return 0;
 		}
+	}
+	
+	public SharedPreferences getPrefs() {
+		return prefs;
 	}
 
 }
