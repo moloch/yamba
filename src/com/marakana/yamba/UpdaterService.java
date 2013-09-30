@@ -8,6 +8,8 @@ import android.util.Log;
 public class UpdaterService extends Service {
 
 	private static final String TAG = "UpdaterService";
+	public static final String NEW_STATUS_INTENT = "com.marakana.yamba.NEW_STATUS";
+	public static final String NEW_STATUS_EXTRA_COUNT = "NEW_STATUS_EXTRA_COUNT";
 	private static final int DELAY = 60000;
 	private boolean runFlag = false;
 	private Updater updater;
@@ -46,6 +48,8 @@ public class UpdaterService extends Service {
 	}
 
 	private class Updater extends Thread {
+		
+		Intent intent;
 
 		public Updater() {
 			super("UpdaterService-Updater");
@@ -62,6 +66,9 @@ public class UpdaterService extends Service {
 					int newUpdates = yamba.fetchStatusUpdates();
 					if(newUpdates > 0){
 						Log.d(TAG, "We have a new status");
+						intent = new Intent(NEW_STATUS_INTENT);
+						intent.putExtra(NEW_STATUS_EXTRA_COUNT, newUpdates);
+						updaterService.sendBroadcast(intent);
 					}
 					Thread.sleep(DELAY);
 				} catch (InterruptedException e) {

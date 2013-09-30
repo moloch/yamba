@@ -1,9 +1,13 @@
 package com.marakana.yamba;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -17,6 +21,8 @@ public class TimelineActivity extends BaseActivity {
 	ListView listTimeline;
 	YambaApplication yamba;
 	SimpleCursorAdapter adapter;
+	TimelineReceiver receiver;
+	IntentFilter filter;
 	
 	static final String[] FROM = {StatusData.C_CREATED_AT, StatusData.C_USER, StatusData.C_TEXT};
 	static final int[] TO = {R.id.textCreatedAt, R.id.textUser, R.id.textText};
@@ -25,6 +31,8 @@ public class TimelineActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		yamba = (YambaApplication) this.getApplication();
+		receiver = new TimelineReceiver();
+		filter = new IntentFilter(UpdaterService.NEW_STATUS_INTENT);
 		setContentView(R.layout.timeline);
 		
 		// Check if preferences have been set
@@ -48,6 +56,13 @@ public class TimelineActivity extends BaseActivity {
 	protected void onResume() {
 		super.onResume();
 		this.setupList();
+		registerReceiver(receiver, filter);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		unregisterReceiver(receiver);
 	}
 	
 	private void setupList(){
@@ -74,5 +89,17 @@ public class TimelineActivity extends BaseActivity {
 		}
 
 	};
+	
+	class TimelineReceiver extends BroadcastReceiver{
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			cursor = yamba.getStatusData().getStatusUpdates();
+			adapter.changeCursor(cursor);
+			adapter.notifyDataSetChanged();
+			Log.d("TimelineReceiver", "onReceived");
+		}
+		
+	}
 
 }
